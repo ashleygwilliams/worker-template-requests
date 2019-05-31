@@ -1,3 +1,40 @@
+const someForm = `
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Hello World</h1>
+<p>This is all generated using a Worker</p>
+<form action="/demos/requests" method="post">
+  <div>
+    <label for="say">What  do you want to say?</label>
+    <input name="say" id="say" value="Hi">
+  </div>
+  <div>
+    <label for="to">To who?</label>
+    <input name="to" id="to" value="Mom">
+  </div>
+  <div>
+    <button>Send my greetings</button>
+  </div>
+</form>
+</body>
+</html>
+`
+/**
+ * rawHtmlResponse delievers a response with HTML inputted directly
+ * into the worker script
+ * @param {string} html
+ */
+async function rawHtmlResponse(html) {
+  const init = {
+    headers: {
+      'content-type': 'text/html;charset=UTF-8',
+    },
+  }
+
+  return new Response(html, init)
+}
+
 /**
  * readRequestBody reads in the incoming request body
  * Use await readRequestBody(..) in an async function to get the string
@@ -17,8 +54,11 @@ async function readRequestBody(request) {
     const body = await request.text()
     return body
   } else if (contentType.includes('form')) {
-    //TODO need help testing this
-    const body = await request.formData()
+    const formData = await request.formData()
+    let body = {}
+    for (let entry of formData.entries()) {
+      body[entry[0]] = entry[1]
+    }
     return JSON.stringify(body)
   } else {
     let myBlob = await request.blob()
@@ -39,7 +79,9 @@ async function formatResponseOnGet(request) {
 addEventListener('fetch', event => {
   const { request } = event
   const { url } = request
-
+  if (url.includes('form')) {
+    return event.respondWith(rawHtmlResponse(someForm))
+  }
   if (request.method === 'POST') {
     return event.respondWith(formatResponseOnPost(request))
   } else if (request.method === 'GET') {
