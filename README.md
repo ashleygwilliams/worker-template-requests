@@ -2,7 +2,7 @@
 
 Examples of reading in a POST request body of type JSON, form-data, and blobs before it reaches the origin server.
 
-[`index.js`](https://github.com/cloudflare/worker-template-requests/blob/master/index.js) is the content of the Workers script.
+[`index.js`](https://github.com/ashleygwilliams/worker-template-requests/blob/master/index.js) is the content of the Workers script.
 
 Live Demos are hosted on `workers-tooling.cf/demos/requests`:
 [Demo](http://workers-tooling.cf/demos/requests/)
